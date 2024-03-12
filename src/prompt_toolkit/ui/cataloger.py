@@ -205,40 +205,8 @@ def run_cataloger():
         }
     )
 
-    # load settings
-    settings = load_settings()
-
-    last_source = settings.get('last_source')
-    source: str = (
-        last_source if last_source
-        else str(select_source())
-    )
-
-    last_target = settings.get('last_target')
-    target: str = (
-        last_target if last_target
-        else str(select_target())
-    )
-
-    last_lang = settings.get('last_lang')
-    lang: str = (
-        last_lang if last_lang
-        else 'en'
-    )
-    app.set_language(lang)
-
-    # store latest selected settings
-    settings['last_source'] = source
-    settings['last_target'] = target
-    save_settings(settings)
-
-    storage = PromptStorage(source, target)
-
-    mi_var = BooleanVar()
-    mi_theme = None
-
     def select_file(
-        initial_dir: str = str(Path.home()),
+        initial_dir: str = str(Path()),
         title: str = 'Select file',
         ftypes: list[tuple[str, str]] = [('csv files', '*.csv'), ('all files', '*.*')],
         error_msg: str = app.get_text('file_not_found'),
@@ -257,7 +225,7 @@ def run_cataloger():
         return Path(file).resolve()
 
     def select_path(
-        initial_dir: str = str(Path.home()),
+        initial_dir: str = str(Path()),
         title: str = 'Select file',
         ftypes: list[tuple[str, str]] = [('csv files', '*.csv'), ('all files', '*.*')],
         error_msg: str = app.get_text('file_not_found'),
@@ -291,6 +259,98 @@ def run_cataloger():
         app.label.target_path.config(text=file)
 
         return file
+
+    # source & target dataset selection
+    app.init_frame(
+        'source_select',
+        pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5}
+    )
+    app.init_frame(
+        'target_select', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
+    app.init_frame(
+        'status_display', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
+    app.init_frame(
+        'prompt_display', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
+    app.init_frame(
+        'user_input_top', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
+    app.init_frame(
+        'user_input_bottom', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
+
+    app.init_label(
+        'source_path_header',
+        text_resource='select_source_header',
+        init_kwargs={'font': ('Arial', 18), 'width': 10},
+        pack_kwargs={'side': LEFT},
+        parent_name='source_select'
+    )
+    app.init_label(
+        'source_path',
+        text_resource='loading',
+        init_kwargs={'anchor': 'w', 'bg': 'black', 'fg': 'white'},
+        pack_kwargs={'side': LEFT, 'fill': 'x', 'expand': True},
+        parent_name='source_select'
+    )
+    app.init_button(
+        'source_path',
+        text_resource='select_file_button',
+        init_kwargs={'command': select_source},
+        pack_kwargs={'side': RIGHT, 'padx': 20},
+        parent_name='source_select'
+    )
+
+    app.init_label(
+        'target_path_header',
+        text_resource='select_target_header',
+        init_kwargs={'font': ('Arial', 18), 'width': 10},
+        pack_kwargs={'side': LEFT},
+        parent_name='target_select'
+    )
+    app.init_label(
+        'target_path',
+        text_resource='loading',
+        init_kwargs={'anchor': 'w', 'bg': 'black', 'fg': 'white'},
+        pack_kwargs={'side': LEFT, 'fill': 'x', 'expand': True},
+        parent_name='target_select'
+    )
+    app.init_button(
+        'target_path',
+        text_resource='select_file_button',
+        init_kwargs={'command': select_target},
+        pack_kwargs={'side': RIGHT, 'padx': 20},
+        parent_name='target_select'
+    )
+
+    # load settings
+    settings = load_settings()
+
+    last_source = settings.get('last_source')
+    source: str = (
+        last_source if last_source
+        else str(select_source())
+    )
+
+    last_target = settings.get('last_target')
+    target: str = (
+        last_target if last_target
+        else str(select_target())
+    )
+
+    last_lang = settings.get('last_lang')
+    lang: str = (
+        last_lang if last_lang
+        else 'en'
+    )
+    app.set_language(lang)
+
+    # store latest selected settings
+    settings['last_source'] = source
+    settings['last_target'] = target
+    save_settings(settings)
+
+    storage = PromptStorage(source, target)
+
+    mi_var = BooleanVar()
+    mi_theme = None
 
     def update_value_display() -> None:
         nsfw_val, mi_val = storage.get_values()
@@ -366,66 +426,6 @@ def run_cataloger():
 
     app.menu.menu_bar.add_cascade(label='Language/Lenguaje', menu=app.menu.langs)
     app.frame.root.config(menu=app.menu.menu_bar)
-
-    # source & target dataset selection
-    app.init_frame(
-        'source_select',
-        pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5}
-    )
-    app.init_frame(
-        'target_select', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
-    app.init_frame(
-        'status_display', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
-    app.init_frame(
-        'prompt_display', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
-    app.init_frame(
-        'user_input_top', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
-    app.init_frame(
-        'user_input_bottom', pack_kwargs={'side': TOP, 'fill': 'x', 'padx': 10, 'pady': 5})
-
-    app.init_label(
-        'source_path_header',
-        text_resource='select_source_header',
-        init_kwargs={'font': ('Arial', 18), 'width': 10},
-        pack_kwargs={'side': LEFT},
-        parent_name='source_select'
-    )
-    app.init_label(
-        'source_path',
-        text_resource='loading',
-        init_kwargs={'anchor': 'w', 'bg': 'black', 'fg': 'white'},
-        pack_kwargs={'side': LEFT, 'fill': 'x', 'expand': True},
-        parent_name='source_select'
-    )
-    app.init_button(
-        'source_path',
-        text_resource='select_file_button',
-        init_kwargs={'command': select_source},
-        pack_kwargs={'side': RIGHT, 'padx': 20},
-        parent_name='source_select'
-    )
-
-    app.init_label(
-        'target_path_header',
-        text_resource='select_target_header',
-        init_kwargs={'font': ('Arial', 18), 'width': 10},
-        pack_kwargs={'side': LEFT},
-        parent_name='target_select'
-    )
-    app.init_label(
-        'target_path',
-        text_resource='loading',
-        init_kwargs={'anchor': 'w', 'bg': 'black', 'fg': 'white'},
-        pack_kwargs={'side': LEFT, 'fill': 'x', 'expand': True},
-        parent_name='target_select'
-    )
-    app.init_button(
-        'target_path',
-        text_resource='select_file_button',
-        init_kwargs={'command': select_target},
-        pack_kwargs={'side': RIGHT, 'padx': 20},
-        parent_name='target_select'
-    )
 
     # status display
     app.init_button(
