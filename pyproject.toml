@@ -1,0 +1,18 @@
+[tool.poetry]
+name = 'prompt-toolkit'
+version = '0.1a0'
+packages = [{include = 'prompt_toolkit', from='src'}]
+description = ''
+authors = ['Guillermo Rodriguez <guillermo@telos.net>']
+
+[tool.poetry.dependencies]
+python = '>=3.11'
+pdbplus = '^1.5.0'
+click = "^8.1.7"
+
+[tool.poetry.scripts]
+ptoolkit = 'prompt_toolkit.cli:ptoolkit'
+
+[build-system]
+requires = ['poetry-core']
+build-backend = 'poetry.core.masonry.api'
