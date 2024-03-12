@@ -518,7 +518,7 @@ def run_cataloger():
 
     app.pack()
 
-    app.frame.root.bind('<space>', lambda event: _next_prompt())
+    app.frame.root.bind('<space>', lambda event: change_prompt())
     # app.frame.root.bind('<Configure>', lambda event: app.label.prompt.config(wraplength=event.width))
 
     app.frame.root.mainloop()
