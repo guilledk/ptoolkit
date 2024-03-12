@@ -14,7 +14,7 @@ def get_home_path() -> Path:
 
 def json_to_csv(source: Path, target: Path):
     # load raw data
-    with open(source, 'r') as file:
+    with open(source, 'r', encoding='utf-8') as file:
         data = json.load(file)
 
     # filter repeated prompts and non expected formatted prompts
@@ -35,7 +35,7 @@ def json_to_csv(source: Path, target: Path):
             continue
 
     # finally write to csv
-    with open(target, 'w', newline='') as csvfile:
+    with open(target, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['ID', 'Timestamp', 'Prompt', 'Block Number', 'Block ID', 'Transaction ID'])
 
@@ -55,7 +55,7 @@ def json_to_csv(source: Path, target: Path):
 
 
 def list_to_csv(target: Path, data: list):
-    with open(target, 'w', newline='') as csvfile:
+    with open(target, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['ID', 'Prompt', 'NSFW', 'MI'])
 
@@ -65,7 +65,7 @@ def list_to_csv(target: Path, data: list):
 
 def csv_to_list(source: Path) -> list:
     data = []
-    with open(source, newline='') as csvfile:
+    with open(source, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             data.append(tuple(row[column] for column in reader.fieldnames))
